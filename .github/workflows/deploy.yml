@@ -1,0 +1,48 @@
+name: Deploy mdBook to GitHub Pages
+
+on:
+  push:
+    branches:
+      - main # Скрипт срабатывает при каждом пуше в ветку main
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install mdBook
+        run: |
+          # Скачивание и установка актуальной версии mdBook
+          curl -sL https://github.com \
+          | grep '"browser_download_url":.*linux-gnu\.tar\.gz"' \
+          | cut -d '"' -f 4 \
+          | wget -qi -
+          tar -xzf mdbook-*.tar.gz
+          sudo mv mdbook /usr/local/bin/
+          rm mdbook-*.tar.gz
+
+      - name: Build mdBook
+        run: mdbook build
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: './book' # Путь к скомпилированной книге
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
