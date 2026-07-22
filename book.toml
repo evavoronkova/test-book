@@ -10,5 +10,5 @@ use-default-preprocessors = true
 
 # АВТОМАТИЗАЦИЯ: Подключаем препроцессор KaTeX
 [preprocessor.katex]
-command = "./mdbook-katex.exe"
-after = ["links"]
+# command = "./mdbook-katex.exe"
+# after = ["links"]
