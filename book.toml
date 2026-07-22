@@ -1,0 +1,14 @@
+[book]
+title = "Probability"
+authors = ["evavoronkova"]
+language = "en"
+
+[build]
+build-dir = "book"
+create-missing = true
+use-default-preprocessors = true
+
+# АВТОМАТИЗАЦИЯ: Подключаем препроцессор KaTeX
+[preprocessor.katex]
+command = "./mdbook-katex.exe"
+after = ["links"]
