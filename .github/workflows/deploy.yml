@@ -24,16 +24,16 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      # Устанавливаем актуальный mdBook и совместимый форк плагина KaTeX
       - name: Install mdBook and mdbook-katex
         uses: taiki-e/install-action@v2
         with:
-          tool: mdbook,mdbook-katex
+          tool: mdbook,mdbook-katex-scaled
 
-      # Принудительно выдаем права на запуск для mdbook и mdbook-katex
-      - name: Fix execution permissions
+      # Переименовываем бинарник форка, чтобы mdBook вызывал его по стандартному имени katex
+      - name: Link plugin name
         run: |
-          chmod +x $(which mdbook)
-          chmod +x $(which mdbook-katex)
+          sudo ln -s $(which mdbook-katex-scaled) /usr/local/bin/mdbook-katex
 
       - name: Build mdBook
         run: mdbook build
@@ -46,6 +46,7 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
+
 
 
 
