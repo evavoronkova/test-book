@@ -1,14 +1,20 @@
 [book]
-title = "Probability"
-authors = ["evavoronkova"]
-language = "en"
+title = "Введение в теорию графов"
+authors = ["Eva"]
+language = "ru"
+src = "src"
+description = "Онлайн-конспект лекций"
 
 [build]
 build-dir = "book"
-create-missing = true
-use-default-preprocessors = true
 
-# АВТОМАТИЗАЦИЯ: Подключаем препроцессор KaTeX
+[output.html]
+default-theme = "light"
+preferred-dark-theme = "navy"
+mathjax-support = false
+
 [preprocessor.katex]
-# command = "./mdbook-katex.exe"
-# after = ["links"]
+command = "./mdbook-katex.exe"
+after = ["links"]
+
+

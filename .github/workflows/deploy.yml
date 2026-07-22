@@ -1,9 +1,10 @@
-name: Deploy mdBook to GitHub Pages
+name: Deploy mdBook
 
 on:
   push:
     branches:
       - main
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -11,43 +12,44 @@ permissions:
   id-token: write
 
 concurrency:
-  group: "pages"
+  group: pages
   cancel-in-progress: true
 
 jobs:
-  deploy:
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
+  build:
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # Устанавливаем актуальный mdBook и совместимый форк плагина KaTeX
-      - name: Install mdBook and mdbook-katex
-        uses: taiki-e/install-action@v2
-        with:
-          tool: mdbook,mdbook-katex-scaled
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
 
-      # Переименовываем бинарник форка, чтобы mdBook вызывал его по стандартному имени katex
-      - name: Link plugin name
-        run: |
-          sudo ln -s $(which mdbook-katex-scaled) /usr/local/bin/mdbook-katex
+      - name: Install mdBook
+        run: cargo install mdbook --version 0.5.4
 
-      - name: Build mdBook
+      - name: Install mdbook-katex
+        run: cargo install mdbook-katex --version 0.9.4
+
+      - name: Build book
         run: mdbook build
 
-      - name: Upload artifact
+      - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: './book'
+          path: ./book
 
+  deploy:
+    needs: build
+
+    runs-on: ubuntu-latest
+
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    steps:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
-
-
-
-
-
