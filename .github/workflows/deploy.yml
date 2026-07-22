@@ -24,11 +24,16 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # Надежная и быстрая установка mdBook и плагина через официальный менеджер
       - name: Install mdBook and mdbook-katex
         uses: taiki-e/install-action@v2
         with:
           tool: mdbook,mdbook-katex
+
+      # Принудительно выдаем права на запуск для mdbook и mdbook-katex
+      - name: Fix execution permissions
+        run: |
+          chmod +x $(which mdbook)
+          chmod +x $(which mdbook-katex)
 
       - name: Build mdBook
         run: mdbook build
@@ -41,6 +46,7 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
+
 
 
 
