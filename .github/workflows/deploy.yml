@@ -3,7 +3,7 @@ name: Deploy mdBook to GitHub Pages
 on:
   push:
     branches:
-      - main # Скрипт срабатывает при каждом пуше в ветку main
+      - main
 
 permissions:
   contents: read
@@ -24,16 +24,12 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Install mdBook
-        run: |
-          # Скачивание и установка актуальной версии mdBook
-          curl -sL https://github.com \
-          | grep '"browser_download_url":.*linux-gnu\.tar\.gz"' \
-          | cut -d '"' -f 4 \
-          | wget -qi -
-          tar -xzf mdbook-*.tar.gz
-          sudo mv mdbook /usr/local/bin/
-          rm mdbook-*.tar.gz
+      # Установка mdBook и плагина KaTeX через готовый экшен
+      - name: Setup mdBook with KaTeX
+        uses: jontze/action-mdbook@v3
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          use-katex: true # Включает автоматическую установку mdbook-katex
 
       - name: Build mdBook
         run: mdbook build
@@ -41,8 +37,9 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: './book' # Путь к скомпилированной книге
+          path: './book'
 
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
+
