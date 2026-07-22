@@ -24,15 +24,21 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # Установка mdBook и плагина KaTeX через готовый экшен
-      - name: Setup mdBook with KaTeX
-        uses: jontze/action-mdbook@v3
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          use-katex: true # Включает автоматическую установку mdbook-katex
+      # Установка Rust и cargo-binstall для быстрой загрузки бинарников
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Install cargo-binstall
+        "run": curl -L --proto '=https' --tlsv1.2 -sSf https://githubusercontent.com | sh
+
+      # Быстрая установка mdBook и mdbook-katex с автоматическим выставлением прав +x
+      - name: Install mdBook and KaTeX plugin
+        "run": |
+          cargo binstall --no-confirm mdbook
+          cargo binstall --no-confirm mdbook-katex
 
       - name: Build mdBook
-        run: mdbook build
+        "run": mdbook build
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
@@ -42,4 +48,5 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
+
 
